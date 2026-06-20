@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presentation Coach</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0f1117;
+            --surface: #1a1d27;
+            --surface2: #22263a;
+            --border: #2e3250;
+            --accent: #4f8ef7;
+            --accent2: #7c5cfc;
+            --green: #22c55e;
+            --amber: #f59e0b;
+            --red: #ef4444;
+            --text: #e8eaf6;
+            --muted: #7b82a8;
+            --radius: 12px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* ── Header ── */
+        header {
+            background: linear-gradient(135deg, #1a1d27, #12162a);
+            border-bottom: 1px solid var(--border);
+            padding: 0 32px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand { display: flex; align-items: center; gap: 12px; }
+
+        .logo {
+            width: 36px; height: 36px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px;
+        }
+
+        .brand-text { font-size: 16px; font-weight: 600; }
+        .brand-sub  { font-size: 11px; color: var(--muted); margin-top: 1px; }
+
+        .header-right { display: flex; align-items: center; gap: 10px; }
+
+        .pill {
+            display: flex; align-items: center; gap: 6px;
+            padding: 5px 12px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .dot {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: var(--green);
+            box-shadow: 0 0 6px var(--green);
+        }
+
+        .dot.red { background: var(--red); box-shadow: 0 0 6px var(--red); }
+
+        /* ── Mode tabs ── */
+        .mode-bar {
+            display: flex;
+            gap: 0;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 4px;
+            margin: 24px 32px 0;
+            width: fit-content;
+        }
+
+        .mode-tab {
+            padding: 8px 24px;
+            border-radius: 7px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            color: var(--muted);
+            border: none;
+            background: transparent;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .mode-tab.active {
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            color: #fff;
+            box-shadow: 0 2px 10px rgba(79,142,247,0.3);
+        }
+
+        /* ── Container ── */
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 24px 32px 40px;
+        }
+
+        .panel { display: none; }
+        .panel.active { display: block; }
+
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+        .full { grid-column: 1 / -1; }
+
+        @media (max-width: 900px) {
+            .grid { grid-template-columns: 1fr; }
+            .container, .mode-bar { padding-left: 16px; padding-right: 16px; margin-left: 0; }
+            header { padding: 0 16px; }
+            .mode-bar { margin: 16px 16px 0; }
+        }
+
+        /* ── Cards ── */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 22px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
+        }
+
+        .card-title {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--muted);
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ── Buttons ── */
+        button {
+            display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+            padding: 10px 18px;
+            font-size: 13px; font-weight: 500;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--surface2);
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        button:hover { background: #2a2f4a; border-color: #3e4568; }
+        button:active { transform: scale(0.97); }
+
+        button.primary {
+            background: linear-gradient(135deg, var(--accent), #3b7af5);
+            border-color: transparent; color: #fff;
+            box-shadow: 0 2px 12px rgba(79,142,247,0.3);
+        }
+        button.primary:hover { filter: brightness(1.08); box-shadow: 0 4px 20px rgba(79,142,247,0.45); }
+
+        button.danger {
+            background: linear-gradient(135deg, var(--red), #dc2626);
+            border-color: transparent; color: #fff;
+            box-shadow: 0 2px 12px rgba(239,68,68,0.3);
+        }
+        button.danger:hover { filter: brightness(1.08); }
+
+        button.full { width: 100%; margin-bottom: 10px; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .btn-row { display: flex; gap: 8px; margin-top: 10px; }
+        .btn-row button { flex: 1; }
+
+        /* ── Session box ── */
+        .session-box {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 18px;
+            text-align: center;
+            margin-bottom: 16px;
+            position: relative; overflow: hidden;
+        }
+
+        .session-box.recording { border-color: rgba(239,68,68,0.5); }
+        .session-box.recording::after {
+            content: '';
+            position: absolute; inset: 0;
+            background: radial-gradient(ellipse at center, rgba(239,68,68,0.06) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .timer {
+            font-size: 42px; font-weight: 700;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, var(--text), var(--muted));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            margin-bottom: 4px;
+        }
+
+        .session-box.recording .timer {
+            background: linear-gradient(135deg, #fff, #fca5a5);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        .rec-indicator {
+            display: none; align-items: center; justify-content: center;
+            gap: 6px; font-size: 11px; font-weight: 700;
+            color: var(--red); text-transform: uppercase; letter-spacing: 0.12em;
+            margin-bottom: 4px;
+        }
+
+        .session-box.recording .rec-indicator { display: flex; }
+
+        .rec-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: var(--red);
+            animation: pulse-red 1s ease-in-out infinite;
+        }
+
+        @keyframes pulse-red {
+            0%,100% { opacity: 1; box-shadow: 0 0 0 0 rgba(239,68,68,0.4); }
+            50%      { opacity: 0.6; box-shadow: 0 0 0 4px rgba(239,68,68,0); }
+        }
+
+        .status-label { font-size: 12px; color: var(--muted); }
+
+        /* ── Slide bar ── */
+        .slide-bar {
+            display: flex; align-items: center; gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .slide-bar input {
+            width: 60px; padding: 7px 10px;
+            background: var(--surface2); border: 1px solid var(--border);
+            border-radius: 6px; color: var(--text); font-size: 13px; text-align: center;
+        }
+
+        .slide-bar input:focus { outline: none; border-color: var(--accent); }
+
+        .slide-progress { flex: 1; height: 4px; background: var(--surface2); border-radius: 2px; overflow: hidden; }
+        .slide-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 2px; transition: width 0.3s; }
+        .slide-label { font-size: 12px; color: var(--muted); white-space: nowrap; }
+
+        /* ── Feedback ── */
+        .feedback-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        @media (max-width: 600px) { .feedback-grid { grid-template-columns: 1fr; } }
+
+        .feedback-item {
+            background: var(--surface2); border: 1px solid var(--border);
+            border-radius: 10px; padding: 14px;
+        }
+
+        .f-label {
+            font-size: 10px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.1em; color: var(--muted); margin-bottom: 6px;
+            display: flex; align-items: center; gap: 5px;
+        }
+
+        .f-text { font-size: 13px; color: var(--text); line-height: 1.6; }
+
+        .empty-state { text-align: center; padding: 36px 20px; color: var(--muted); font-size: 13px; }
+        .empty-state .icon { font-size: 32px; margin-bottom: 8px; }
+
+        /* ── Transcript ── */
+        .transcript-box {
+            max-height: 180px; overflow-y: auto;
+            padding: 14px;
+            background: var(--surface2); border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 13px; line-height: 1.7; color: #a0a8cc;
+            font-family: 'SF Mono', 'Monaco', monospace;
+        }
+
+        .transcript-box::-webkit-scrollbar { width: 4px; }
+        .transcript-box::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+        /* ── Upload zone ── */
+        .upload-zone {
+            border: 2px dashed var(--border); border-radius: 10px;
+            padding: 32px; text-align: center; cursor: pointer;
+            transition: all 0.2s; margin-bottom: 14px; position: relative;
+        }
+
+        .upload-zone:hover { border-color: var(--accent); background: rgba(79,142,247,0.04); }
+        .upload-zone.has-file { border-color: rgba(79,142,247,0.5); background: rgba(79,142,247,0.06); }
+        .upload-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+        .upload-zone .upload-icon { font-size: 32px; margin-bottom: 10px; }
+        .upload-zone .upload-text { font-size: 13px; color: var(--muted); }
+        .upload-zone .upload-name { font-size: 13px; color: var(--accent); font-weight: 500; margin-top: 6px; }
+
+        /* ── Scores ── */
+        .scores-row {
+            display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px;
+            margin: 16px 0;
+        }
+
+        @media (max-width: 700px) { .scores-row { grid-template-columns: repeat(3, 1fr); } }
+
+        .score-chip {
+            background: var(--surface2); border: 1px solid var(--border);
+            border-radius: 10px; padding: 14px 10px; text-align: center;
+        }
+
+        .score-chip.good { border-color: rgba(34,197,94,0.3); }
+        .score-chip.warn { border-color: rgba(245,158,11,0.4); }
+
+        .chip-val {
+            font-size: 22px; font-weight: 700; display: block;
+            margin-bottom: 4px; font-variant-numeric: tabular-nums;
+        }
+
+        .score-chip.good .chip-val { color: var(--green); }
+        .score-chip.warn .chip-val { color: var(--amber); }
+
+        .chip-label {
+            font-size: 10px; text-transform: uppercase;
+            letter-spacing: 0.08em; color: var(--muted);
+        }
+
+        /* ── Tips ── */
+        .tip-item {
+            display: flex; align-items: flex-start; gap: 10px;
+            padding: 12px 14px;
+            background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.2);
+            border-radius: 8px; margin-bottom: 8px;
+            font-size: 13px; color: #fcd34d; line-height: 1.5;
+        }
+
+        .tip-ok {
+            display: flex; align-items: center; gap: 10px;
+            padding: 12px 14px;
+            background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.2);
+            border-radius: 8px; font-size: 13px; color: #86efac;
+        }
+
+        /* ── Progress bar (offline) ── */
+        .progress-wrap { margin: 16px 0; }
+
+        .progress-bar {
+            height: 6px; background: var(--surface2);
+            border-radius: 3px; overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+            border-radius: 3px;
+            transition: width 0.4s;
+            width: 0%;
+        }
+
+        .progress-label { font-size: 12px; color: var(--muted); margin-top: 8px; }
+
+        /* ── Section divider ── */
+        .section-divider {
+            border: none; border-top: 1px solid var(--border);
+            margin: 24px 0;
+        }
+
+        /* ── Spinner / analyzing ── */
+        .spinner {
+            width: 14px; height: 14px;
+            border: 2px solid rgba(255,255,255,0.2);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            flex-shrink: 0;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .analyzing {
+            display: flex; align-items: center; gap: 10px;
+            font-size: 13px; color: var(--muted);
+            padding: 14px; background: var(--surface2);
+            border-radius: 8px;
+        }
+
+        /* ── Toasts ── */
+        #toasts {
+            position: fixed; bottom: 24px; right: 24px; z-index: 999;
+            display: flex; flex-direction: column; gap: 8px;
+        }
+
+        .toast {
+            padding: 12px 18px; border-radius: 10px;
+            font-size: 13px; font-weight: 500; min-width: 240px;
+            animation: slide-in 0.2s ease;
+            display: flex; align-items: center; gap: 8px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        }
+
+        .toast.success { background: #14532d; border: 1px solid #16a34a; color: #86efac; }
+        .toast.error   { background: #450a0a; border: 1px solid #b91c1c; color: #fca5a5; }
+        .toast.info    { background: #1e1b4b; border: 1px solid #4338ca; color: #a5b4fc; }
+
+        @keyframes slide-in {
+            from { transform: translateX(20px); opacity: 0; }
+            to   { transform: translateX(0);    opacity: 1; }
+        }
+
+        /* ── Slide deck bar ── */
+        .deck-bar {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 10px 32px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .deck-bar-label { font-size: 12px; font-weight: 700; letter-spacing: 0.08em; color: var(--muted); white-space: nowrap; }
+        .deck-status {
+            flex: 1;
+            font-size: 13px;
+            color: var(--muted);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .deck-status.loaded { color: var(--green); }
+        .deck-upload-btn {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 6px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--surface2);
+            color: var(--text);
+            cursor: pointer;
+            white-space: nowrap;
+            transition: border-color .15s;
+        }
+        .deck-upload-btn:hover { border-color: var(--accent); }
+        .deck-upload-btn input { display: none; }
+    </style>
+</head>
+<body>
+
+<!-- Header -->
+<header>
+    <div class="brand">
+        <div class="logo">🎤</div>
+        <div>
+            <div class="brand-text">Presentation Coach</div>
+            <div class="brand-sub">Real-time AI feedback · Whisper + MediaPipe + LLM</div>
+        </div>
+    </div>
+    <div class="header-right">
+        <div class="pill" id="health-pill">
+            <span class="dot red" id="health-dot"></span>
+            <span id="health-label">Connecting…</span>
+        </div>
+    </div>
+</header>
+
+<!-- Mode selector -->
+<div class="mode-bar">
+    <button class="mode-tab active" id="tab-live" onclick="switchMode('live')">
+        🎙 Live Rehearsal
+    </button>
+    <button class="mode-tab" id="tab-offline" onclick="switchMode('offline')">
+        🎬 Offline Analysis
+    </button>
+    <button class="mode-tab" id="tab-progress" onclick="switchMode('progress')">
+        📊 Progress
+    </button>
+</div>
+
+<div id="toasts"></div>
+
+<!-- Slide deck upload (shared across both modes) -->
+<div class="deck-bar">
+    <span class="deck-bar-label">📄 SLIDE DECK</span>
+    <span class="deck-status" id="deck-status">No deck loaded — relevance will use slide numbers only</span>
+    <label class="deck-upload-btn">
+        Upload PDF / PPTX
+        <input type="file" id="deck-file" accept=".pdf,.pptx,.ppt" onchange="uploadSlideDeck(this)">
+    </label>
+</div>
+
+<div class="container">
+
+    <!-- ══════════════════════ LIVE MODE ══════════════════════ -->
+    <div class="panel active" id="panel-live">
+        <div class="grid">
+
+            <!-- Session control -->
+            <div class="card">
+                <div class="card-title">⏱ Session</div>
+
+                <div class="session-box" id="session-box">
+                    <div class="rec-indicator"><span class="rec-dot"></span> Recording</div>
+                    <div class="timer" id="timer">0:00</div>
+                    <div class="status-label" id="status-text">Ready to rehearse</div>
+                </div>
+
+                <button id="record-btn" class="primary full" onclick="toggleRecording()">
+                    🎙 Start Rehearsal
+                </button>
+
+                <div class="slide-bar" style="margin-top:14px;">
+                    <span class="slide-label">Slides:</span>
+                    <input type="number" id="live-slide-count" min="1" max="100" value="10" onchange="updateSlideUI()">
+                    <div class="slide-progress"><div class="slide-fill" id="live-slide-fill" style="width:10%"></div></div>
+                    <span class="slide-label" id="live-slide-label">1 / 10</span>
+                </div>
+
+                <div class="btn-row">
+                    <button onclick="prevSlide()">← Prev</button>
+                    <button onclick="nextSlide()">Next →</button>
+                </div>
+            </div>
+
+            <!-- Live feedback -->
+            <div class="card">
+                <div class="card-title">💬 Real-Time Feedback</div>
+                <div id="live-feedback">
+                    <div class="empty-state">
+                        <div class="icon">🎤</div>
+                        Start rehearsing to get feedback on pacing, fillers, tone, and relevance.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transcript -->
+            <div class="card full">
+                <div class="card-title">📝 Transcript</div>
+                <div id="live-transcript" class="transcript-box" style="color:var(--muted);">
+                    No speech detected yet…
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ══════════════════════ OFFLINE MODE ══════════════════════ -->
+    <div class="panel" id="panel-offline">
+
+        <!-- Upload + settings -->
+        <div class="card" style="margin-bottom:20px;">
+            <div class="card-title">🎬 Upload Presentation Video</div>
+
+            <div class="upload-zone" id="offline-upload-zone">
+                <input type="file" id="offline-video" accept="video/mp4,video/webm,video/quicktime"
+                       onchange="onOfflineFileSelect(this)">
+                <div class="upload-icon">📁</div>
+                <div class="upload-text">Drop your video here or click to browse</div>
+                <div class="upload-name" id="offline-filename"></div>
+            </div>
+
+            <div class="slide-bar">
+                <span class="slide-label">Slide:</span>
+                <input type="number" id="offline-slide" min="1" max="100" value="1" style="width:60px;">
+                <span class="slide-label">of</span>
+                <input type="number" id="offline-total" min="1" max="100" value="10" style="width:60px;">
+                <span class="slide-label" style="flex:1;text-align:right;color:var(--muted);">
+                    Set which slide this video covers
+                </span>
+            </div>
+
+            <button class="primary full" id="offline-btn" onclick="runOfflineAnalysis()">
+                🚀 Analyse Video
+            </button>
+
+            <div id="offline-progress" style="display:none;" class="progress-wrap">
+                <div class="progress-bar"><div class="progress-fill" id="offline-progress-fill"></div></div>
+                <div class="progress-label" id="offline-progress-label">Starting pipeline…</div>
+            </div>
+        </div>
+
+        <!-- Results (hidden until analysis done) -->
+        <div id="offline-results" style="display:none;">
+
+            <div class="grid">
+
+                <!-- Transcript -->
+                <div class="card">
+                    <div class="card-title">📝 Transcript</div>
+                    <div id="offline-transcript" class="transcript-box" style="color:var(--muted);">—</div>
+                </div>
+
+                <!-- Speech feedback -->
+                <div class="card">
+                    <div class="card-title">💬 Speech Feedback</div>
+                    <div id="offline-feedback">
+                        <div class="empty-state"><div class="icon">💬</div>Awaiting results…</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Video presence -->
+            <div class="card" style="margin-bottom:20px;">
+                <div class="card-title">👁 Video Presence Analysis</div>
+                <div id="offline-scores" class="scores-row" style="display:none;"></div>
+                <div id="offline-tips"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ══════════════════════ PROGRESS MODE ══════════════════════ -->
+    <div class="panel" id="panel-progress">
+
+        <div class="card" style="margin-bottom:20px; display:flex; align-items:center; justify-content:space-between;">
+            <div class="card-title" style="margin-bottom:0;">📊 Progress Across Your Session</div>
+            <button onclick="loadProgress()">↻ Refresh</button>
+        </div>
+
+        <div id="progress-empty" class="empty-state">
+            <div class="icon">📊</div>
+            No sessions yet — rehearse or analyse a video to populate your progress charts.
+        </div>
+
+        <div id="progress-charts" style="display:none;">
+
+            <!-- Filler words — works for live + offline (any session with feedback) -->
+            <div id="progress-fillers" class="card" style="margin-bottom:20px; display:none;">
+                <div class="card-title">💬 Filler Words This Session</div>
+                <div style="position:relative; width:100%; height:240px;">
+                    <canvas id="chart-fillers" role="img" aria-label="Bar chart of total filler word counts across the session">Total filler word counts this session.</canvas>
+                </div>
+            </div>
+
+            <!-- Presence metrics — only populated by offline video analyses -->
+            <div id="progress-presence" style="display:none;">
+                <div class="grid">
+                    <div class="card">
+                        <div class="card-title">🎯 Latest Delivery Radar</div>
+                        <div style="position:relative; width:100%; height:260px;">
+                            <canvas id="chart-radar" role="img" aria-label="Radar of latest presence metrics: eye contact, posture, gesture, lighting, in-frame">Latest presence metrics scored 0 to 10.</canvas>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">👁 Eye Contact by Slide</div>
+                        <div style="position:relative; width:100%; height:260px;">
+                            <canvas id="chart-eye" role="img" aria-label="Bar chart of eye contact percentage per analysed slide">Eye contact percentage per slide.</canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="card full">
+                    <div class="card-title">📈 Presence Score per Slide</div>
+                    <div style="position:relative; width:100%; height:240px;">
+                        <canvas id="chart-trend" role="img" aria-label="Line chart of presence score out of 30 across analysed slides">Presence score out of 30 per slide.</canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+    const API_URL = 'http://localhost:5001';
+    const API_KEY = 'dev-key-change-in-production';
+
+    /* ── Health check ── */
+    async function checkHealth() {
+        const dot   = document.getElementById('health-dot');
+        const label = document.getElementById('health-label');
+        try {
+            const res  = await fetch(`${API_URL}/api/health`);
+            const data = await res.json();
+            dot.className   = 'dot';
+            label.textContent = data.ollama === 'connected'
+                ? `Connected · ${data.model_provider || 'ready'}`
+                : `Connected · ${data.model_provider || 'ready'}`;
+        } catch {
+            dot.className   = 'dot red';
+            label.textContent = 'Server offline';
+            toast('Flask server not reachable — start it first', 'error');
+        }
+    }
+
+    /* ── Mode switch ── */
+    function switchMode(mode) {
+        ['live', 'offline', 'progress'].forEach(m => {
+            document.getElementById('panel-' + m).classList.toggle('active', mode === m);
+            document.getElementById('tab-' + m).classList.toggle('active', mode === m);
+        });
+        if (mode === 'progress') loadProgress();
+    }
+
+    /* ════════════════════════════════════
+       LIVE MODE
+    ════════════════════════════════════ */
+    let audioStream    = null;
+    let mediaRecorder  = null;
+    let audioChunks    = [];
+    let isRecording    = false;
+    let elapsedSeconds = 0;
+    let timerInterval  = null;
+    let currentSlide   = 1;
+    let totalSlides    = 10;
+    let fullTranscript = '';
+    let isProcessing   = false;
+
+    function updateSlideUI() {
+        totalSlides = parseInt(document.getElementById('live-slide-count').value) || 10;
+        document.getElementById('live-slide-label').textContent = `${currentSlide} / ${totalSlides}`;
+        document.getElementById('live-slide-fill').style.width = `${(currentSlide / totalSlides) * 100}%`;
+    }
+
+    async function toggleRecording() {
+        if (!isRecording) await startRecording();
+        else stopRecording();
+    }
+
+    async function startRecording() {
+        try {
+            audioStream   = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder = new MediaRecorder(audioStream);
+            audioChunks   = [];
+            fullTranscript = '';
+            document.getElementById('live-transcript').textContent = '';
+
+            mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+            mediaRecorder.onstop = async () => {
+                await processAudio(new Blob(audioChunks, { type: 'audio/wav' }));
+            };
+
+            mediaRecorder.start();
+            isRecording = true;
+
+            const btn = document.getElementById('record-btn');
+            btn.textContent = '⏹ Stop Rehearsal';
+            btn.className = 'danger full';
+            document.getElementById('session-box').classList.add('recording');
+            document.getElementById('status-text').textContent = 'Recording in progress…';
+            elapsedSeconds = 0;
+
+            timerInterval = setInterval(() => {
+                elapsedSeconds++;
+                const m = Math.floor(elapsedSeconds / 60);
+                const s = elapsedSeconds % 60;
+                document.getElementById('timer').textContent = `${m}:${s.toString().padStart(2,'0')}`;
+            }, 1000);
+
+            await updateSlide();
+            toast('Rehearsal started — speak clearly!', 'success');
+        } catch {
+            toast('Microphone access denied', 'error');
+        }
+    }
+
+    function stopRecording() {
+        mediaRecorder?.stop();
+        audioStream?.getTracks().forEach(t => t.stop());
+        clearInterval(timerInterval);
+        isRecording = false;
+        const btn = document.getElementById('record-btn');
+        btn.textContent = '🎙 Start Rehearsal';
+        btn.className = 'primary full';
+        document.getElementById('session-box').classList.remove('recording');
+        document.getElementById('status-text').textContent = 'Session ended';
+        toast('Rehearsal complete', 'success');
+    }
+
+    async function processAudio(blob) {
+        if (isProcessing) return;
+        isProcessing = true;
+
+        const feedbackEl = document.getElementById('live-feedback');
+        feedbackEl.innerHTML = '<div class="analyzing"><span class="spinner"></span>Analysing speech…</div>';
+
+        const fd = new FormData();
+        fd.append('audio', blob, 'recording.wav');
+        fd.append('slide', currentSlide);
+
+        try {
+            const res = await fetch(`${API_URL}/api/transcribe`, {
+                method: 'POST', headers: { 'X-API-Key': API_KEY }, body: fd
+            });
+            if (!res.ok) throw new Error((await res.json()).error || 'API error');
+            const data = await res.json();
+
+            if (data.transcript) {
+                fullTranscript += data.transcript + ' ';
+                const el = document.getElementById('live-transcript');
+                el.textContent = fullTranscript;
+                el.style.color = 'var(--text)';
+                el.scrollTop = el.scrollHeight;
+            }
+            if (data.feedback) renderFeedback(data.feedback, 'live-feedback');
+        } catch (err) {
+            toast(`Error: ${err.message}`, 'error');
+            feedbackEl.innerHTML = `<div class="analyzing" style="color:var(--red);">⚠ ${err.message}</div>`;
+        } finally {
+            isProcessing = false;
+        }
+    }
+
+    function nextSlide() {
+        if (currentSlide < totalSlides) {
+            currentSlide++;
+            updateSlideUI();
+            updateSlide();
+            document.getElementById('live-feedback').innerHTML =
+                `<div class="analyzing">→ Slide ${currentSlide} — continue speaking…</div>`;
+        }
+    }
+
+    function prevSlide() {
+        if (currentSlide > 1) { currentSlide--; updateSlideUI(); updateSlide(); }
+    }
+
+    async function updateSlide() {
+        try {
+            await fetch(`${API_URL}/api/slide`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-API-Key': API_KEY },
+                body: JSON.stringify({ slide: currentSlide, total: totalSlides })
+            });
+        } catch {}
+    }
+
+    /* ════════════════════════════════════
+       OFFLINE MODE
+    ════════════════════════════════════ */
+    function onOfflineFileSelect(input) {
+        const zone = document.getElementById('offline-upload-zone');
+        const name = document.getElementById('offline-filename');
+        if (input.files.length) {
+            zone.classList.add('has-file');
+            name.textContent = input.files[0].name;
+        }
+    }
+
+    async function runOfflineAnalysis() {
+        const fileInput = document.getElementById('offline-video');
+        if (!fileInput.files.length) { toast('Select a video file first', 'error'); return; }
+
+        const slide = parseInt(document.getElementById('offline-slide').value) || 1;
+        const total = parseInt(document.getElementById('offline-total').value) || 10;
+
+        const btn      = document.getElementById('offline-btn');
+        const progress = document.getElementById('offline-progress');
+        const fill     = document.getElementById('offline-progress-fill');
+        const plabel   = document.getElementById('offline-progress-label');
+        const results  = document.getElementById('offline-results');
+
+        btn.disabled = true;
+        results.style.display = 'none';
+        progress.style.display = 'block';
+        fill.style.width = '5%';
+        plabel.textContent = 'Uploading video…';
+
+        const fd = new FormData();
+        fd.append('video', fileInput.files[0]);
+        fd.append('slide', slide);
+        fd.append('total', total);
+
+        try {
+            // Step 1: submit job
+            const res = await fetch(`${API_URL}/api/analyze-offline`, {
+                method: 'POST', headers: { 'X-API-Key': API_KEY }, body: fd
+            });
+            if (!res.ok) throw new Error((await res.json()).error || 'Upload failed');
+            const { job_id } = await res.json();
+
+            fill.style.width = '15%';
+            plabel.textContent = 'Job started — transcribing audio with Whisper…';
+
+            // Step 2: poll /api/job/<job_id> every 2s
+            const pollSteps = [
+                [30, 'Analysing speech with AI agent…'],
+                [55, 'Running MediaPipe video analysis…'],
+                [75, 'Processing presence scores…'],
+                [88, 'Finalising results…'],
+            ];
+            let stepIdx = 0;
+
+            const data = await new Promise((resolve, reject) => {
+                const interval = setInterval(async () => {
+                    try {
+                        const poll = await fetch(`${API_URL}/api/job/${job_id}`);
+                        const job  = await poll.json();
+
+                        if (job.status === 'done') {
+                            clearInterval(interval);
+                            resolve(job.result);
+                        } else if (job.status === 'error') {
+                            clearInterval(interval);
+                            reject(new Error(job.error || 'Pipeline error'));
+                        } else {
+                            // still running — advance fake progress
+                            if (stepIdx < pollSteps.length) {
+                                fill.style.width   = pollSteps[stepIdx][0] + '%';
+                                plabel.textContent = pollSteps[stepIdx][1];
+                                stepIdx++;
+                            }
+                        }
+                    } catch (e) {
+                        clearInterval(interval);
+                        reject(e);
+                    }
+                }, 2000);
+            });
+
+            fill.style.width = '100%';
+            plabel.textContent = 'Complete!';
+            setTimeout(() => { progress.style.display = 'none'; }, 800);
+
+            renderOfflineResults(data);
+            results.style.display = 'block';
+            toast('Analysis complete!', 'success');
+
+        } catch (err) {
+            progress.style.display = 'none';
+            toast(`Analysis failed: ${err.message}`, 'error');
+        } finally {
+            btn.disabled = false;
+        }
+    }
+
+    function renderOfflineResults(data) {
+        // Transcript
+        const tEl = document.getElementById('offline-transcript');
+        tEl.textContent = data.transcript || 'No speech detected.';
+        tEl.style.color = data.transcript ? 'var(--text)' : 'var(--muted)';
+
+        // Speech feedback
+        if (data.feedback) renderFeedback(data.feedback, 'offline-feedback');
+
+        // Video presence
+        const r = data.video_report;
+        if (r && !r.error) {
+            const chips = [
+                { label: 'Eye Contact', val: `${Math.round(r.eye_contact_ratio*100)}%`,  warn: r.eye_contact_ratio < 0.6 },
+                { label: 'Posture',     val: `${Math.round(r.avg_posture_score*100)}%`,  warn: r.avg_posture_score  < 0.7 },
+                { label: 'Gestures',   val: r.avg_gesture_delta.toFixed(3),              warn: r.avg_gesture_delta < 0.01 || r.avg_gesture_delta > 0.15 },
+                { label: 'Lighting',   val: `${r.avg_brightness.toFixed(0)}/255`,        warn: r.avg_brightness < 80 || r.avg_brightness > 220 },
+                { label: 'Score',      val: `${r.partial_score}/${r.max_score}`,         warn: r.partial_score < 15 },
+            ];
+
+            const scoresEl = document.getElementById('offline-scores');
+            scoresEl.innerHTML = chips.map(c =>
+                `<div class="score-chip ${c.warn ? 'warn' : 'good'}">
+                    <span class="chip-val">${c.val}</span>
+                    <span class="chip-label">${c.label}</span>
+                </div>`
+            ).join('');
+            scoresEl.style.display = 'grid';
+
+            const tipsEl = document.getElementById('offline-tips');
+            if (r.tips?.length) {
+                tipsEl.innerHTML = r.tips.map(t =>
+                    `<div class="tip-item"><span>💡</span>${t}</div>`
+                ).join('');
+            } else {
+                tipsEl.innerHTML = '<div class="tip-ok"><span>✓</span>Strong on-camera presence — no issues detected.</div>';
+            }
+        }
+    }
+
+    /* fillers is now a list of {word, count}; render it as readable text */
+    function fillersToText(fillers) {
+        if (!Array.isArray(fillers)) return fillers || '—';   // tolerate old string format
+        if (!fillers.length) return 'None detected — clean delivery 👍';
+        return fillers.map(x => `${x.word} ×${x.count}`).join(', ');
+    }
+
+    /* ── Shared: render feedback grid ── */
+    function renderFeedback(f, containerId) {
+        const items = [
+            { icon: '⏱', label: 'Pacing',    text: f.pacing    || '—' },
+            { icon: '💬', label: 'Fillers',   text: fillersToText(f.fillers) },
+            { icon: '🎤', label: 'Tone',      text: f.tone      || '—' },
+            { icon: '📍', label: 'Relevance', text: f.relevance || '—' },
+        ];
+        document.getElementById(containerId).innerHTML =
+            `<div class="feedback-grid">${items.map(i =>
+                `<div class="feedback-item">
+                    <div class="f-label">${i.icon} ${i.label}</div>
+                    <div class="f-text">${i.text}</div>
+                </div>`
+            ).join('')}</div>`;
+    }
+
+    /* ════════════════════════════════════
+       PROGRESS MODE — charts from /api/history
+       Presence metrics (eye/posture/gesture/lighting/score) come from offline
+       video reports, so the charts draw from history entries that have a
+       video_report. Live audio-only sessions have no numeric scores to plot.
+    ════════════════════════════════════ */
+    const _charts = {};
+
+    function drawChart(id, config) {
+        _charts[id]?.destroy();                 // re-render cleanly on refresh
+        _charts[id] = new Chart(document.getElementById(id), config);
+    }
+
+    async function loadProgress() {
+        const empty = document.getElementById('progress-empty');
+        const wrap  = document.getElementById('progress-charts');
+
+        try {
+            const res = await fetch(`${API_URL}/api/history`, { headers: { 'X-API-Key': API_KEY } });
+            if (!res.ok) throw new Error('Could not load history');
+            const history = await res.json();
+
+            const withVideo = history.filter(e =>
+                e.video_report && !e.video_report.error &&
+                typeof e.video_report.partial_score === 'number'
+            );
+
+            // Aggregate filler counts across every session (live + offline)
+            const fillerTotals = {};
+            history.forEach(e => {
+                if (Array.isArray(e.feedback?.fillers)) {
+                    e.feedback.fillers.forEach(({ word, count }) => {
+                        if (word) fillerTotals[word] = (fillerTotals[word] || 0) + (count || 0);
+                    });
+                }
+            });
+            const fillerWords = Object.keys(fillerTotals).sort((a, b) => fillerTotals[b] - fillerTotals[a]);
+
+            if (!withVideo.length && !fillerWords.length) {
+                empty.innerHTML = `<div class="icon">📊</div>${history.length
+                    ? history.length + ' session(s) recorded, but no filler or presence data yet.'
+                    : 'No sessions yet — rehearse or analyse a video to populate your progress charts.'}`;
+                empty.style.display = 'block';
+                wrap.style.display  = 'none';
+                return;
+            }
+
+            empty.style.display = 'none';
+            wrap.style.display  = 'block';
+            document.getElementById('progress-fillers').style.display  = fillerWords.length ? 'block' : 'none';
+            document.getElementById('progress-presence').style.display = withVideo.length    ? 'block' : 'none';
+
+            const blue = '#4f8ef7', green = '#22c55e', purple = '#7c5cfc', amber = '#f59e0b';
+            const grid = 'rgba(123,130,168,.18)', tick = '#7b82a8';
+            Chart.defaults.color = tick;
+
+            // Filler words — total counts this session (live + offline)
+            if (fillerWords.length) {
+                drawChart('chart-fillers', {
+                    type: 'bar',
+                    data: { labels: fillerWords,
+                        datasets: [{ data: fillerWords.map(w => fillerTotals[w]), backgroundColor: amber }] },
+                    options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+                        scales: { x: { beginAtZero: true, grid: { color: grid }, ticks: { precision: 0 } },
+                            y: { grid: { display: false } } } }
+                });
+            }
+
+            if (!withVideo.length) return;   // nothing more to plot without video reports
+
+            // Radar: normalise the latest video report's raw metrics to 0–10
+            const v = withVideo[withVideo.length - 1].video_report;
+            const radar = [
+                Math.round(v.eye_contact_ratio * 10),
+                Math.round(v.avg_posture_score * 10),
+                Math.round(Math.min(v.avg_gesture_delta / 0.10, 1) * 10),   // ~0.10 = lively
+                Math.round(Math.max(0, Math.min((v.avg_brightness - 40) / 160, 1)) * 10),
+                Math.round((v.face_detection_rate ?? 0) * 10),
+            ];
+            drawChart('chart-radar', {
+                type: 'radar',
+                data: { labels: ['Eye', 'Posture', 'Gesture', 'Lighting', 'In-frame'],
+                    datasets: [{ data: radar, borderColor: green, backgroundColor: 'rgba(34,197,94,.18)', pointBackgroundColor: green }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+                    scales: { r: { min: 0, max: 10, grid: { color: grid }, angleLines: { color: grid },
+                        pointLabels: { color: tick, font: { size: 12 } }, ticks: { display: false, stepSize: 2 } } } }
+            });
+
+            // Eye contact % per analysed slide
+            drawChart('chart-eye', {
+                type: 'bar',
+                data: { labels: withVideo.map(e => 'S' + e.slide),
+                    datasets: [{ data: withVideo.map(e => Math.round(e.video_report.eye_contact_ratio * 100)), backgroundColor: blue }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+                    scales: { y: { min: 0, max: 100, grid: { color: grid }, ticks: { callback: x => x + '%' } },
+                        x: { grid: { display: false } } } }
+            });
+
+            // Presence score (out of 30) per slide
+            drawChart('chart-trend', {
+                type: 'line',
+                data: { labels: withVideo.map(e => 'Slide ' + e.slide),
+                    datasets: [{ data: withVideo.map(e => e.video_report.partial_score),
+                        borderColor: purple, backgroundColor: 'rgba(124,92,252,.15)', fill: true, tension: .35, pointRadius: 3, pointBackgroundColor: purple }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+                    scales: { y: { min: 0, max: 30, grid: { color: grid } }, x: { grid: { display: false } } } }
+            });
+
+        } catch (err) {
+            empty.innerHTML = `<div class="icon">⚠</div>${err.message}`;
+            empty.style.display = 'block';
+            wrap.style.display  = 'none';
+        }
+    }
+
+    /* ── Toast ── */
+    function toast(msg, type = 'info') {
+        const el = document.createElement('div');
+        el.className = `toast ${type}`;
+        const icon = type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ';
+        el.innerHTML = `<span>${icon}</span><span>${msg}</span>`;
+        document.getElementById('toasts').appendChild(el);
+        setTimeout(() => el.remove(), 4500);
+    }
+
+    /* ── Slide deck upload ── */
+    async function uploadSlideDeck(input) {
+        if (!input.files.length) return;
+        const file = input.files[0];
+        const statusEl = document.getElementById('deck-status');
+        statusEl.className = 'deck-status';
+        statusEl.textContent = `Uploading ${file.name}…`;
+
+        const fd = new FormData();
+        fd.append('slides', file);
+        try {
+            const res  = await fetch(`${API_URL}/api/upload-slides`, {
+                method: 'POST', headers: { 'X-API-Key': API_KEY }, body: fd
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Upload failed');
+            statusEl.className = 'deck-status loaded';
+            statusEl.textContent = `✓ ${file.name} — ${data.slides} slide${data.slides !== 1 ? 's' : ''} loaded`;
+            toast(`Slide deck loaded (${data.slides} slides) — relevance analysis enabled`, 'success');
+        } catch (err) {
+            statusEl.textContent = `Upload failed: ${err.message}`;
+            toast(`Deck upload failed: ${err.message}`, 'error');
+        }
+        input.value = '';
+    }
+
+    /* ── Init ── */
+    updateSlideUI();
+    setTimeout(checkHealth, 500);
+</script>
+</body>
+</html>

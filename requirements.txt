@@ -1,0 +1,24 @@
+flask==2.3.3
+flask-cors==4.0.0
+faster-whisper>=1.0.0
+numpy<2
+requests==2.31.0
+python-dotenv==1.0.0
+
+# Production server (used in Dockerfile)
+gunicorn>=21.0.0
+
+# Day 2: MCP Server
+mcp>=1.0.0
+
+# Day 1: ADK Multi-Agent + LiteLLM (Ollama backend)
+google-adk>=0.3.0
+litellm>=1.40.0
+
+# Video analysis (analyze_video MCP tool — MediaPipe + OpenCV)
+opencv-python-headless>=4.9.0
+mediapipe>=0.10.14
+
+# Slide deck extraction (PDF/PPTX → relevance context)
+python-pptx>=0.6.21
+pypdf>=3.0.0

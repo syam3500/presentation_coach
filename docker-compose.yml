@@ -1,0 +1,42 @@
+# docker-compose.yml — Presentation Coach Agent
+#
+# Services:
+#   ollama             — local LLM server (Mistral)
+#   presentation-coach — Flask API + ADK multi-agent + MCP server
+#
+# Usage:
+#   docker-compose up --build
+#   docker exec -it ollama ollama pull mistral   (first run only)
+#   Open index.html in browser (served separately or via python -m http.server 8000)
+
+services:
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama   # persist downloaded models across restarts
+    restart: unless-stopped
+
+  presentation-coach:
+    build: .
+    container_name: presentation-coach
+    ports:
+      - "5000:5000"
+    environment:
+      - OLLAMA_URL=http://ollama:11434    # use service name, not localhost
+      - OLLAMA_MODEL=mistral
+      # SECURITY: Set API_KEY as an environment variable — never hardcode secrets.
+      # Override with: docker-compose up -e API_KEY=your-secret
+      - API_KEY=${API_KEY:-dev-key-change-in-production}
+      - AUDIT_LOG=/app/audit.jsonl
+    volumes:
+      - ./audit.jsonl:/app/audit.jsonl   # persist audit log on host
+    depends_on:
+      - ollama
+    restart: unless-stopped
+
+volumes:
+  ollama_data:

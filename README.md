@@ -54,13 +54,13 @@ Open the UI, click **Start Rehearsal**, and speak. Switch to **Offline Analysis*
 
 ---
 
-## The Story Behind This Project
+## The story behind this project
 
-In June 2026, I defended my data science Master thesis. Months of work compressed into a single presentation in front of a jury. I had practised, of course — but practising alone in front of a mirror only gets you so far. You cannot see yourself the way your audience does. You cannot count your filler words. You cannot tell whether your eye contact is reassuring or anxious.
+In June 2026, I defended my master's thesis in data science. Months of work compressed into a single presentation in front of a jury. I had practiced, of course, but practicing alone in front of a mirror only gets you so far. You cannot see yourself the way your audience does. You cannot count your filler words. You cannot tell whether your eye contact is reassuring or anxious.
 
-In the days before my defence, I started looking for tools that could give me that kind of feedback. It was also the week I was attending the 5-Day AI Agents: Intensive Vibe Coding Course with Google (June 15–19, 2026). There I was, learning to build AI agents, and yet the tools that could help me prepare my own presentation were either locked behind a subscription or required uploading my video to a third-party server.
+In the days before my defense, I began looking for tools that could provide that kind of feedback. It was also the week I was attending the 5-Day AI Agents: Intensive Vibe Coding Course with Google (June 15–19, 2026). There I was, learning to build AI agents, yet the tools that could help me prepare my own presentation were either locked behind a subscription or required me to upload my video to a third-party server.
 
-I decided to build this instead — as my Capstone Project. Audio and video are processed locally. Only transcript text is sent to the LLM of your choice.
+I decided to build this instead as my Capstone Project. Audio and video are processed locally. Only the transcript text is sent to the LLM of your choice.
 
 ---
 
@@ -84,7 +84,7 @@ Hiring a coach is expensive. Recording yourself and reviewing it later is slow. 
 6. Visualises your session in a **Chart.js dashboard** — filler counts, a presence radar, and eye-contact / score trends — fed by `/api/history`
 7. Logs every agent action to an audit trail
 
-Audio and video never leave your machine. Only transcript text goes to the LLM.
+Audio and video never leave your machine. Only the transcript text goes to the LLM.
 
 ---
 
@@ -157,17 +157,17 @@ flowchart TD
     class LLM cloud;
 ```
 
-> 🟢 green = runs locally (audio/video never leave your machine) · 🔴 red = the only hop off-device (transcript **text** to the LLM)
+> 🟢 green = runs locally (audio/video never leaves your machine) · 🔴 red = the only hop off-device (transcript **text** to the LLM)
 
 Transcription and video analysis are **deterministic** — no model is needed to decide
-to run Whisper or MediaPipe — so on the hot path they are plain in-process calls into
+to run Whisper or MediaPipe — so on the hot path, they are plain in-process calls into
 `media_tools.py`, with the models loaded **once per process** (not reloaded per request).
 `mcp_server.py` wraps the *same* `media_tools` functions and exposes them over stdio, so
 the tools are reachable by any MCP client from a single source of truth. Only the feedback
 step uses an LLM, and it returns a typed `output_schema` object.
 
-(An earlier iteration wrapped each deterministic step in its own `LlmAgent`; on local CPU
-those routing round-trips dominated latency, so they were removed — one model call per
+(An earlier iteration wrapped each deterministic step in its own `LlmAgent`; on the local CPU
+those routing round-trips dominated the latency, so they were removed — one model call per
 analysis instead of five.)
 
 ### Request lifecycle — offline mode
@@ -206,7 +206,7 @@ sequenceDiagram
 - **Whisper model cached per process** — loaded once, not rebuilt on every request.
 - **Better transcription, zero extra CPU** — `condition_on_previous_text=False` stops silence-hallucination loops, the current slide's text is passed as Whisper's `initial_prompt` to bias vocabulary, and VAD is tuned. Set `WHISPER_MODEL=base.en` for stronger English at the same cost.
 - **Structured output** — the feedback agent uses an ADK `output_schema` (`Feedback` / `FillerCount`), replacing brittle free-text JSON parsing.
-- **Bounded job store** — the offline-job map evicts oldest entries, so it can't grow without limit.
+- **Bounded job store** — the offline-job map evicts the oldest entries, so it can't grow without limit.
 - **Provider-aware health** — `/api/health` reports the active provider instead of always probing Ollama; timestamps are timezone-aware UTC.
 
 ### Agent Skills (`.agents/skills/`)
@@ -305,7 +305,7 @@ python -m http.server 8080
 
 ## API Reference
 
-All endpoints except `/api/health` require the `X-API-Key` header (bypassed in dev mode).
+All endpoints except `/api/health` require the `X-API-Key` header (which is bypassed in dev mode).
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|

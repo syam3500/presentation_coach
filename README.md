@@ -125,8 +125,6 @@ $env:MODEL_PROVIDER="ollama"; $env:OLLAMA_MODEL="gemma4:e2b-it-qat";
 
 ## Architecture
 
-![Presentation Coach agent workflow](presentation_evaluator_agent_workflow.png)
-
 ```mermaid
 flowchart TD
     UI["Browser · index.html<br/>Live / Offline / Progress (Chart.js)"]

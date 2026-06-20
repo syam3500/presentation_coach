@@ -26,11 +26,12 @@ services:
     ports:
       - "5000:5000"
     environment:
+      - MODEL_PROVIDER=ollama             # use local Ollama; set to gemini or anthropic + supply key to switch
       - OLLAMA_URL=http://ollama:11434    # use service name, not localhost
       - OLLAMA_MODEL=mistral
-      # SECURITY: Set API_KEY as an environment variable — never hardcode secrets.
-      # Override with: docker-compose up -e API_KEY=your-secret
-      - API_KEY=${API_KEY:-dev-key-change-in-production}
+      # SECURITY: export API_KEY before running — e.g. export API_KEY=mysecret && docker-compose up
+      # The app refuses to start if this is left as the default value in production mode.
+      - API_KEY=${API_KEY:?API_KEY must be set before running docker-compose up}
       - AUDIT_LOG=/app/audit.jsonl
     volumes:
       - ./audit.jsonl:/app/audit.jsonl   # persist audit log on host

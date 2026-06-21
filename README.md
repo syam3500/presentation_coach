@@ -56,7 +56,7 @@ Open the UI, click **Start Rehearsal**, and speak. Switch to **Offline Analysis*
 
 ## The story behind this project
 
-In June 2026, I needed to defend my master's thesis in data science. Months of work compressed into a single presentation in front of a jury. I had practiced, of course, but practicing alone in front of a mirror only gets you so far. You cannot see yourself the way your audience does. You cannot count your filler words. You cannot tell whether your eye contact is reassuring or anxious.
+In June 2026, I was preparing to defend my Master's thesis in Statistics and Data Science. Months of work compressed into a single presentation in front of a jury. I had practiced, of course, but practicing alone in front of a mirror only gets you so far. You cannot see yourself the way your audience does. You cannot count your filler words. You cannot tell whether your eye contact is reassuring or anxious.
 
 In the days before my defense, I began looking for tools that could provide that kind of feedback. It was also the week I was attending the 5-Day AI Agents: Intensive Vibe Coding Course with Google (June 15–19, 2026). There I was, learning to build AI agents, yet the tools that could help me prepare my own presentation were either locked behind a subscription or required me to upload my video to a third-party server.
 

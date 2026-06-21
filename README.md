@@ -343,7 +343,7 @@ All seven pillars from the Day 4 baseline are addressed:
 | **Data Visualisation** | `index.html` — Chart.js Progress dashboard fed by `/api/history` |
 | **Agent Skills** | `.agents/skills/` — SKILL.md files |
 | **Security (7 Pillars)** | `app.py` |
-| **Spec-Driven Dev (Day 5)** | `references/rubric.md` (spec) + `tests/golden_test.py` (AI-generated test coverage); `Dockerfile` + `docker-compose.yml` (deployment) |
+| **Spec-Driven Dev (Day 5)** | `Dockerfile` + `docker-compose.yml` (deployment) |
 | **Agentic Dev** | `AGENTS.md` |
 
 ---
